@@ -1,8 +1,7 @@
 import hashlib
 import logging
 import pickle
-import util
-import yao
+from . import util, yao
 
 
 class ObliviousTransfer:

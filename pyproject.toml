@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "EM_10A_VU_Secure_Private_Computation_Project"
+version = "1.0.0"
+dependencies = [
+    "pyzmq",
+    "cryptography",
+    "sympy",
+    "parameterized"
+]
+requires-python = ">= 3.6"
+description = "Extension to ojroques/garbled-circuit"
+readme = "README.md"
+
+[project.urls]
+Source = "https://github.com/5tefan543/EM_10A_VU_Secure_Private_Computation_Project"
+
+[tool.setuptools]
+packages = ["garbled_circuit"]
+
+[tool.setuptools.package-dir]
+"" = "."

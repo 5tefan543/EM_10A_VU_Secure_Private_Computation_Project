@@ -26,6 +26,12 @@ class Socket:
     def send_wait(self, msg):
         self.send(msg)
         return self.receive()
+    
+    def close(self):
+        self.socket.setsockopt(zmq.LINGER, 0)
+        self.poller.unregister(self.socket)
+        self.socket.close()
+        self.socket.context.term()
 
     """
     From https://stackoverflow.com/questions/17174001/stop-pyzmq-receiver-by-keyboardinterrupt
