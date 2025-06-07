@@ -186,7 +186,7 @@ def read_input_from_file(filename, bits_supported=4):
 
 
 def main():
-    circuit_path = "circuits/cmp_4bit.json"
+    circuit_path = "circuits/cmp_4bit_signed.json"
     loglevels = {
             "debug": logging.DEBUG,
             "info": logging.INFO,
