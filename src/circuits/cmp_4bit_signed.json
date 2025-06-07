@@ -1,0 +1,45 @@
+{
+  "name": "cmp",
+  "circuits": [
+    {
+      "id": "4-bit CMP signed (two's complement)",
+      "alice": [1, 2, 3, 4],
+      "bob": [5, 6, 7, 8],
+      "out": [42, 31],
+      "gates": [
+        {"id": 11, "type": "NOT", "in": [1]},
+        {"id": 12, "type": "NOT", "in": [2]},
+        {"id": 13, "type": "AND", "in": [11,5]},
+        {"id": 14, "type": "AND", "in": [12,6]},
+        {"id": 15, "type": "XNOR", "in": [1,5]},
+        {"id": 16, "type": "AND", "in": [14,15]},
+        {"id": 17, "type": "OR", "in": [13,16]},
+        {"id": 18, "type": "NOT", "in": [3]},
+        {"id": 19, "type": "AND", "in": [18,7]},
+        {"id": 20, "type": "XNOR", "in": [2,6]},
+        {"id": 21, "type": "AND", "in": [15,20]},
+        {"id": 22, "type": "AND", "in": [19,21]},
+        {"id": 23, "type": "OR", "in": [17,22]},
+        {"id": 24, "type": "NOT", "in": [4]},
+        {"id": 25, "type": "AND", "in": [24,8]},
+        {"id": 26, "type": "XNOR", "in": [3,7]},
+        {"id": 27, "type": "AND", "in": [21,26]},
+        {"id": 28, "type": "AND", "in": [25,27]},
+        {"id": 29, "type": "OR", "in": [23,28]},
+        {"id": 30, "type": "XNOR", "in": [4,8]},
+        {"id": 31, "type": "NAND", "in": [27,30]},
+        {"id": 32, "type": "XOR", "in": [1,5]},
+        {"id": 33, "type": "AND", "in": [1,32]},
+        {"id": 34, "type": "AND", "in": [1,5]},
+        {"id": 35, "type": "NOT", "in": [29]},
+        {"id": 36, "type": "AND", "in": [34,35]},
+        {"id": 37, "type": "OR", "in": [33,36]},
+        {"id": 38, "type": "NOT", "in": [1]},
+        {"id": 39, "type": "NOT", "in": [5]},
+        {"id": 40, "type": "AND", "in": [38,39]},
+        {"id": 41, "type": "AND", "in": [29,40]},
+        {"id": 42, "type": "OR", "in": [37,41]}
+      ]
+    }
+  ]
+}
