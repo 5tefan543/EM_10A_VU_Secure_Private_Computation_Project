@@ -143,7 +143,7 @@ class Bob:
         output = (f"Bob{b_wires} = {str_bits_b}, Outputs{outputs} = {str_result}")
         return output
     
-def read_input_from_file(filename, bits_supported=4):
+def read_input_from_file(filename, bits_supported=32):
     """TODO: Refactor
 
     Args:
@@ -186,7 +186,7 @@ def read_input_from_file(filename, bits_supported=4):
 
 
 def main():
-    circuit_path = "circuits/cmp_4bit_signed.json"
+    circuit_path = "circuits/cmp_32bit_signed_gen.json"
     loglevels = {
             "debug": logging.DEBUG,
             "info": logging.INFO,
