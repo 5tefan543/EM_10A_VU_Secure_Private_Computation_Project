@@ -44,6 +44,8 @@ class Alice(main.YaoGarbler):
         logging.debug(f"Sending {circuit['circuit']['id']}")
         self.socket.send_wait(to_send)
         result = self.evaluate(circuit)
+        # close the socket after processing
+        self.socket.close()
         return result
 
     def evaluate(self, entry):
