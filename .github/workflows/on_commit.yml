@@ -1,0 +1,41 @@
+name: Commit CI # workflow name
+on: # trigger
+  push:
+    branches: [dev,master]
+  pull_request:
+    types: [opened, reopened, edited]
+
+# parallel jobs to perform
+jobs:
+  test:
+    name: Run test
+    runs-on: ubuntu-latest # runner
+    if: ${{ !contains(github.event.head_commit.message, '#notest') || github.ref == 'refs/heads/main' }}
+    steps: # tasks
+      - name: Set Github Workspace # access Github Workspace
+        uses: actions/checkout@v2
+      - name: Set up Python 3.12 # set architecture and Python3
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.12"
+          architecture: "x64" # architecture
+      - name: Build
+        shell: bash
+        run: |
+          pip install -e .
+      - name: Evaluate code quality
+        shell: bash
+        run: |
+          flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 test --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 src --count --exit-zero --max-complexity=15 --max-line-length=120 --statistics
+          flake8 test --count --exit-zero --max-complexity=15 --max-line-length=120 --statistics
+      - name: Run unittests
+        shell: bash
+        run: |
+          python -m unittest
+      - name: Print log
+        shell: bash
+        if: always()
+        run: |
+          if [ -f test.log ]; then cat test.log; fi
