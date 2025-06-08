@@ -166,6 +166,6 @@ class ProtocolManager:
                     verification_failed = True
 
         if verification_failed:
-            logging.error(f"VERIFICATION FAILED!")
+            logging.error("VERIFICATION FAILED!")
         else:
             logging.info("VERIFICATION SUCCESSFUL!")

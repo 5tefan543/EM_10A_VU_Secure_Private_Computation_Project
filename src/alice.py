@@ -2,6 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from garbled_circuit import util, ot, yao
 
+
 class YaoGarbler(ABC):
     """An abstract class for Yao garblers (e.g. Alice)."""
 
@@ -32,6 +33,7 @@ class YaoGarbler(ABC):
     @abstractmethod
     def start(self):
         pass
+
 
 class Alice(YaoGarbler):
     """Alice is the creator of the Yao circuit.
