@@ -1,3 +1,5 @@
+from garbled_circuit import util
+
 ALICE_INPUT_FILE = "input_alice.txt"
 BOB_INPUT_FILE = "input_bob.txt"
 
@@ -67,8 +69,9 @@ class Config():
             raise ValueError("Invalid party specified. Must be 'alice' or 'bob'.")
         
     def get_bits_supported(self) -> int:
-        # Assuming a fixed number of bits supported for simplicity
-        return 32
+        circuit = util.parse_json(self.circuit_path)["circuits"][0]
+        assert len(circuit["alice"]) == len(circuit["bob"])
+        return len(circuit["alice"])
         
     def set_protocol_data(self, protocol_data: ProtocolData):
         self.protocol_data = protocol_data
