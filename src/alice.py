@@ -90,7 +90,8 @@ class Alice(YaoGarbler):
             for w, (key0, key1) in keys.items() if w in b_wires
         }
 
-        print(f"\n======== {circuit['id']} ========")
+        logging.info("")
+        logging.info(f"======== {circuit['id']} ========")
 
         # Map Alice's wires to (key, encr_bit)
         for i in range(len(a_wires)):

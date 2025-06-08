@@ -31,8 +31,8 @@ def main():
                         "--loglevel",
                         metavar="level",
                         choices=loglevels.keys(),
-                        default="warning",
-                        help="the log level (default 'warning')")
+                        default="info",
+                        help="the log level (default 'info')")
 
     args = parser.parse_args()
     config = Config(args.party, args.circuit, not args.no_oblivious_transfer, args.verify)

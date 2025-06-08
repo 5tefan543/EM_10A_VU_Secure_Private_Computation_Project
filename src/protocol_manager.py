@@ -62,8 +62,8 @@ class ProtocolManager:
         protocol_data = ProtocolData(
             inputs, max_input, max_input_scaled, max_input_scaled_bit_array, is_float, is_negative)
 
-        print(f"Inputs: {protocol_data.inputs}")
-        print(f"Local maximum: {protocol_data.max_input}")
+        logging.info(f"Inputs: {protocol_data.inputs}")
+        logging.info(f"Local maximum: {protocol_data.max_input}")
 
         return protocol_data
 
@@ -71,19 +71,19 @@ class ProtocolManager:
         protocol_data = self.config.get_protocol_data()
 
         if protocol_data.check_if_both_have_same_maximum():
-            print("The other party has the same maximum input.")
+            logging.info("The other party has the same maximum input.")
         elif protocol_data.check_if_bob_won():
             if self.config.is_alice():
-                print("Bob has a larger maximum input.")
+                logging.info("Bob has a larger maximum input.")
             else:
-                print(
+                logging.info(
                     f"I have the global maximum input: {protocol_data.max_input}")
         elif protocol_data.check_if_alice_won():
             if self.config.is_alice():
-                print(
+                logging.info(
                     f"I have the global maximum input: {protocol_data.max_input}")
             else:
-                print("Alice has a larger maximum input.")
+                logging.info("Alice has a larger maximum input.")
 
     def compute_protocol(self) -> str:
         if self.config.is_alice():
@@ -102,12 +102,13 @@ class ProtocolManager:
                 "Invalid party specified. Must be 'alice' or 'bob'.")
 
     def verify_result(self):
-        print("\n=== Verifying result without Yao's protocol ===")
+        logging.info("")
+        logging.info("=== Verifying result without Yao's protocol ===")
         protocol_data_local = self.config.get_protocol_data()
-        print(
+        logging.info(
             f"Local protocol output: {protocol_data_local.get_protocol_output()}")
 
-        print("Loading local input data of the other party only for verification...")
+        logging.info("Loading local input data of the other party only for verification...")
         input_file_of_other_party = self.config.get_input_file(
             other_party=True)
         protocol_data_of_other_party = self.init_protocol_data(
@@ -133,7 +134,6 @@ class ProtocolManager:
                     verification_failed = True
 
         if verification_failed:
-            print(f"VERIFICATION FAILED: '{self.config.party.capitalize()}' protocol output: "
-                  f"{protocol_data_local.get_protocol_output()}.")
+            logging.error(f"VERIFICATION FAILED!")
         else:
-            print("VERIFICATION SUCCESSFUL!")
+            logging.info("VERIFICATION SUCCESSFUL!")

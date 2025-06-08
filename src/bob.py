@@ -20,7 +20,7 @@ class Bob:
 
     def listen(self):
         """Start listening for Alice messages."""
-        logging.info("Start listening")
+        logging.debug("Start listening")
         result = None
         try:
             for entry in self.socket.poll_socket():
@@ -28,7 +28,7 @@ class Bob:
                 result = self.send_evaluation(entry)
                 break  # Only process one circuit at a time
         except KeyboardInterrupt:
-            logging.info("Stop listening")
+            logging.debug("Stop listening")
         # close the socket after processing
         self.socket.close()
         return result
@@ -44,7 +44,8 @@ class Bob:
         garbled_tables = entry["garbled_tables"]
         b_wires = circuit.get("bob", [])  # list of Bob's wires
 
-        print(f"\n======== {circuit['id']} ========")
+        logging.info("")
+        logging.info(f"======== {circuit['id']} ========")
 
         # Create dict mapping each wire of Bob to Bob's input
         b_inputs_clear = {
