@@ -20,12 +20,12 @@ class ObliviousTransfer:
         Returns:
             The result of the yao circuit evaluation.
         """
-        logging.debug("Sending inputs to Bob")
+        logging.debug(f"Sending inputs to Bob: {a_inputs}")
         self.socket.send_wait(a_inputs)
 
         logging.debug("Generating prime group to use for OT")
         self.group = self.enabled and (self.group or util.PrimeGroup())
-        logging.debug("Sending prime group")
+        logging.debug(f"Sending prime group: {self.group}")
         self.socket.send(self.group)
 
         for _ in range(len(b_keys)):
@@ -38,8 +38,9 @@ class ObliviousTransfer:
             else:
                 to_send = (b_keys[w][0], b_keys[w][1])
                 self.socket.send(to_send)
-
-        return self.socket.receive()
+        result = self.socket.receive()
+        logging.debug(f"Received circuit evaluation from Bob: {result}")
+        return result
 
     def send_result(self, circuit, g_tables, pbits_out, b_inputs):
         """Evaluate circuit and send the result to Alice.
@@ -59,10 +60,10 @@ class ObliviousTransfer:
         # map from Bob's wires to (key, encr_bit) inputs
         b_inputs_encr = {}
 
-        logging.debug("Received Alice's inputs")
+        logging.debug(f"Received Alice's inputs: {a_inputs}")
 
         self.group = self.socket.receive()
-        logging.debug("Received group to use for OT")
+        logging.debug(f"Received group to use for OT: {self.group}")
 
         for w, b_input in b_inputs.items():
             logging.debug(f"Sending gate ID {w}")
@@ -78,7 +79,7 @@ class ObliviousTransfer:
         result = yao.evaluate(circuit, g_tables, pbits_out, a_inputs,
                               b_inputs_encr)
 
-        logging.debug("Sending circuit evaluation")
+        logging.debug(f"Sending circuit evaluation: {result}")
         self.socket.send(result)
         return result
 
@@ -93,13 +94,16 @@ class ObliviousTransfer:
 
         # OT protocol based on Nigel Smart’s "Cryptography Made Simple"
         c = G.gen_pow(G.rand_int())
+        logging.debug(f"Sending commitment: {c}")
         h0 = self.socket.send_wait(c)
+        logging.debug(f"Received hash corresponding to Bob's input: {h0}")
         h1 = G.mul(c, G.inv(h0))
         k = G.rand_int()
         c1 = G.gen_pow(k)
         e0 = util.xor_bytes(msgs[0], self.ot_hash(G.pow(h0, k), len(msgs[0])))
         e1 = util.xor_bytes(msgs[1], self.ot_hash(G.pow(h1, k), len(msgs[1])))
 
+        logging.debug(f"Sending encrypted messages and second commitment: {e0}, {e1}, {c1}")
         self.socket.send((c1, e0, e1))
         logging.debug("OT protocol ended")
 
@@ -117,10 +121,13 @@ class ObliviousTransfer:
 
         # OT protocol based on Nigel Smart’s "Cryptography Made Simple"
         c = self.socket.receive()
+        logging.debug(f"Received commitment: {c}")
         x = G.rand_int()
         x_pow = G.gen_pow(x)
         h = (x_pow, G.mul(c, G.inv(x_pow)))
+        logging.debug(f"Sending hash depending on input b={b}: {h}")
         c1, e0, e1 = self.socket.send_wait(h[b])
+        logging.debug(f"Received encrypted messages and second commitment: {e0}, {e1}, {c1}")
         e = (e0, e1)
         ot_hash = self.ot_hash(G.pow(c1, x), len(e[b]))
         mb = util.xor_bytes(e[b], ot_hash)

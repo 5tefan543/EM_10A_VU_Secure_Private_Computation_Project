@@ -124,6 +124,9 @@ class PrimeGroup:
             else:
                 return candidate
 
+    def __repr__(self):
+        return f"PrimeGroup(prime={self.prime}, generator={self.generator})"
+
 
 # HELPER FUNCTIONS
 def parse_json(json_path):
