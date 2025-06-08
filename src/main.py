@@ -4,6 +4,8 @@ from protocol_manager import ProtocolManager, Config
 
 
 def main():
+    """Main function to run the Yao protocol to perform a maximum check between two parties."""
+
     loglevels = {
         "debug": logging.DEBUG,
         "info": logging.INFO,

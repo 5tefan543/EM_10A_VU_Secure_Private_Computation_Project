@@ -4,12 +4,18 @@ from garbled_circuit import util, ot, yao
 
 class YaoGarbler(ABC):
     """An abstract class for Yao garblers (e.g. Alice)."""
-    def __init__(self, circuits):
-        circuits = util.parse_json(circuits)
-        self.name = circuits["name"]
+
+    def __init__(self, circuit_path: str):
+        """Initialize the Yao garbler.
+
+        Args:
+            circuit_path (str): Path to the JSON file containing the circuit.
+        """
+        circuit_path = util.parse_json(circuit_path)
+        self.name = circuit_path["name"]
         self.circuits = []
 
-        for circuit in circuits["circuits"]:
+        for circuit in circuit_path["circuits"]:
             garbled_circuit = yao.GarbledCircuit(circuit)
             pbits = garbled_circuit.get_pbits()
             entry = {
@@ -31,30 +37,31 @@ class Alice(YaoGarbler):
     """Alice is the creator of the Yao circuit.
 
     Alice creates a Yao circuit and sends it to the evaluator along with her
-    encrypted inputs.
-
-    TODO: Refactor
-    Alice will finally print the truth table of the circuit
-    for all combination of Alice-Bob inputs.
-
-    Alice does not know Bob's inputs but for the purpose
-    of printing the truth table only, Alice assumes that Bob's inputs follow
-    a specific order.
-
-    Attributes:
-        circuits: the JSON file containing circuits
-        oblivious_transfer: Optional; enable the Oblivious Transfer protocol
-            (True by default).
+    encrypted inputs. After evaluating the circuit, Alice returns the
+    output of the circuit.
     """
 
-    def __init__(self, circuit_path, input_bits: list[int], oblivious_transfer=True):
+    def __init__(self, circuit_path: str, input_bits: list[int], oblivious_transfer=True):
+        """Initialize Alice.
+
+        Args:
+            circuit_path (str): Path to the JSON file containing the circuit.
+            input_bits (list[int]): List of bits representing Alice's inputs.
+            oblivious_transfer (bool): Whether to enable oblivious transfer.
+        """
         super().__init__(circuit_path)
         self.input_bits = input_bits
         self.socket = util.GarblerSocket()
         self.ot = ot.ObliviousTransfer(self.socket, enabled=oblivious_transfer)
 
-    def start(self):
-        """Start Yao protocol."""
+    def start(self) -> list[int]:
+        """Start Yao protocol.
+
+        Returns:
+            list[int]: The output of the evaluated circuit.
+        Raises:
+            ValueError: If multiple circuits are found in the JSON config.
+        """
         result = None
         if len(self.circuits) != 1:
             raise ValueError(
@@ -73,13 +80,13 @@ class Alice(YaoGarbler):
         self.socket.close()
         return result
 
-    def evaluate(self, entry):
-        """
-        TODO: Refactor
-        Print circuit evaluation for all Bob and Alice inputs.
+    def evaluate(self, entry: dict) -> list[int]:
+        """Evaluate the circuit.
 
         Args:
-            entry: A dict representing the circuit to evaluate.
+            entry (dict): A dict representing the circuit to evaluate.
+        Returns:
+            list[int]: The output of the evaluated circuit.
         """
         circuit, pbits, keys = entry["circuit"], entry["pbits"], entry["keys"]
         a_wires = circuit.get("alice", [])  # Alice's wires
@@ -103,5 +110,5 @@ class Alice(YaoGarbler):
 
         return list(result.values())
 
-    def _get_encr_bits(self, pbit, key0, key1):
+    def _get_encr_bits(self, pbit, key0, key1) -> tuple[tuple[int, int], tuple[int, int]]:
         return ((key0, 0 ^ pbit), (key1, 1 ^ pbit))

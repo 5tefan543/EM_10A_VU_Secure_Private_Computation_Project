@@ -5,21 +5,27 @@ from garbled_circuit import util, ot
 class Bob:
     """Bob is the receiver and evaluator of the Yao circuit.
 
-    Bob receives the Yao circuit from Alice, computes the results and sends
-    them back.
-
-    Args:
-        oblivious_transfer: Optional; enable the Oblivious Transfer protocol
-            (True by default).
+    Bob receives the Yao circuit from Alice, computes the result and sends
+    it back.
     """
 
     def __init__(self, input_bits: list[int], oblivious_transfer=True):
+        """Initialize Bob.
+
+        Args:
+            input_bits (list[int]): List of bits representing Bob's inputs.
+            oblivious_transfer (bool): Whether to enable oblivious transfer.
+        """
         self.input_bits = input_bits
         self.socket = util.EvaluatorSocket()
         self.ot = ot.ObliviousTransfer(self.socket, enabled=oblivious_transfer)
 
-    def listen(self):
-        """Start listening for Alice messages."""
+    def listen(self) -> list[int]:
+        """Start listening for Alice messages.
+
+        Returns:
+            list[int]: The output of the evaluated circuit.
+        """
         logging.debug("Start listening")
         result = None
         try:
@@ -33,12 +39,13 @@ class Bob:
         self.socket.close()
         return result
 
-    def send_evaluation(self, entry):
-        """Evaluate yao circuit for all Bob and Alice's inputs and
-        send back the results.
+    def send_evaluation(self, entry: dict) -> list[int]:
+        """Evaluate the circuit and send the result back to Alice.
 
         Args:
-            entry: A dict representing the circuit to evaluate.
+            entry (dict): A dict representing the circuit to evaluate.
+        Returns:
+            list[int]: The output of the evaluated circuit.
         """
         circuit, pbits_out = entry["circuit"], entry["pbits_out"]
         garbled_tables = entry["garbled_tables"]
