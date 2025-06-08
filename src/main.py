@@ -2,6 +2,7 @@ import logging
 import argparse
 from protocol_manager import ProtocolManager, Config
 
+
 def main():
     loglevels = {
         "debug": logging.DEBUG,
@@ -32,13 +33,13 @@ def main():
                         choices=loglevels.keys(),
                         default="warning",
                         help="the log level (default 'warning')")
-    
+
     args = parser.parse_args()
     config = Config(args.party, args.circuit, not args.no_oblivious_transfer, args.verify)
 
     logging.basicConfig(format="[%(levelname)s] %(message)s",
                         level=loglevels[args.loglevel])
-    
+
     protocol_manager = ProtocolManager(config)
     protocol_manager.compute_protocol()
     protocol_manager.print_protocol_result()

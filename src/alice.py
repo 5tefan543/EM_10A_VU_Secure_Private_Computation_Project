@@ -6,7 +6,7 @@ class Alice(main.YaoGarbler):
     """Alice is the creator of the Yao circuit.
 
     Alice creates a Yao circuit and sends it to the evaluator along with her
-    encrypted inputs. 
+    encrypted inputs.
 
     TODO: Refactor
     Alice will finally print the truth table of the circuit
@@ -57,7 +57,6 @@ class Alice(main.YaoGarbler):
             entry: A dict representing the circuit to evaluate.
         """
         circuit, pbits, keys = entry["circuit"], entry["pbits"], entry["keys"]
-        outputs = circuit["out"]
         a_wires = circuit.get("alice", [])  # Alice's wires
         a_inputs = {}  # map from Alice's wires to (key, encr_bit) inputs
         b_wires = circuit.get("bob", [])  # Bob's wires
@@ -76,12 +75,6 @@ class Alice(main.YaoGarbler):
         # Send Alice's encrypted inputs and keys to Bob
         result = self.ot.get_result(a_inputs, b_keys)
 
-        # Format output
-        # str_bits_a = ' '.join(str(b) for b in self.input_bits)
-        # str_result = ' '.join([str(result[w]) for w in outputs])
-
-        # protocol_output_str = (
-        #     f"Alice{a_wires} = {str_bits_a}, Outputs{outputs} = {str_result}")
         return list(result.values())
 
     def _get_encr_bits(self, pbit, key0, key1):

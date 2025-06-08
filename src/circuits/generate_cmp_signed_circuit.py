@@ -1,5 +1,6 @@
 import argparse
 
+
 def generate_cmp_signed_circuit(bits: int) -> str:
     """
     Generates a comparison circuit for signed integers in two's complement representation.
@@ -23,7 +24,6 @@ def generate_cmp_signed_circuit(bits: int) -> str:
     # start first gate id after input bits of Alice and Bob + 1
     wire_id = 2 * bits + 1 + 2
     gates = []
-
 
     # === compare bits and determine if Bob wins (first output bit) ===
 
@@ -50,14 +50,13 @@ def generate_cmp_signed_circuit(bits: int) -> str:
             wire_id += 1
             gates.append({"id": wire_id, "type": "OR", "in": [wire_id-6, wire_id-1]})
             wire_id += 1
-        
+
         # if i == 1 then we don't have a previous equality check
         else:
             gates.append({"id": wire_id, "type": "AND", "in": [wire_id-2, wire_id-1]})
             wire_id += 1
             gates.append({"id": wire_id, "type": "OR", "in": [wire_id-5, wire_id-1]})
             wire_id += 1
-
 
     # add logic for signed integers with two's complement
 
@@ -68,7 +67,7 @@ def generate_cmp_signed_circuit(bits: int) -> str:
     wire_id += 1
 
     # check if A1 == B1 => Bob wins if Bi > Ai for some level i and for all higher bits Bj == Aj holds
-    gates.append({"id": wire_id, "type": "NOT", "in": [wire_id-2]}) # NOT of A1 XOR B1
+    gates.append({"id": wire_id, "type": "NOT", "in": [wire_id-2]})  # NOT of A1 XOR B1
     wire_id += 1
     gates.append({"id": wire_id, "type": "AND", "in": [wire_id-1, wire_id-4]})
     wire_id += 1
@@ -81,7 +80,6 @@ def generate_cmp_signed_circuit(bits: int) -> str:
     # save the first output bit id
     first_output_bit_id = wire_id
     wire_id += 1
-
 
     # === check for equality of bits (second output bit) ===
 
@@ -114,19 +112,20 @@ def generate_cmp_signed_circuit(bits: int) -> str:
     write_compact_and_readable_json(circuit, path)
     return path
 
+
 def write_compact_and_readable_json(circuit_dict, path):
     with open(path, "w") as f:
         f.write('{\n')
         f.write(f'  "name": "{circuit_dict["name"]}",\n')
-        f.write(f'  "circuits": [\n')
-        
+        f.write('  "circuits": [\n')
+
         circuit = circuit_dict["circuits"][0]
         f.write('    {\n')
         f.write(f'      "id": "{circuit["id"]}",\n')
         f.write(f'      "alice": {circuit["alice"]},\n')
         f.write(f'      "bob": {circuit["bob"]},\n')
         f.write(f'      "out": {circuit["out"]},\n')
-        f.write(f'      "gates": [\n')
+        f.write('      "gates": [\n')
 
         for i, gate in enumerate(circuit["gates"]):
             comma = ',' if i < len(circuit["gates"]) - 1 else ''

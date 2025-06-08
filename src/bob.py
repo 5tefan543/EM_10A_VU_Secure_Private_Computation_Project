@@ -1,6 +1,7 @@
 import logging
 from garbled_circuit import util, ot
 
+
 class Bob:
     """Bob is the receiver and evaluator of the Yao circuit.
 
@@ -40,7 +41,6 @@ class Bob:
             entry: A dict representing the circuit to evaluate.
         """
         circuit, pbits_out = entry["circuit"], entry["pbits_out"]
-        outputs = circuit["out"]
         garbled_tables = entry["garbled_tables"]
         b_wires = circuit.get("bob", [])  # list of Bob's wires
 
@@ -56,10 +56,4 @@ class Bob:
         result = self.ot.send_result(circuit, garbled_tables, pbits_out,
                                      b_inputs_clear)
 
-        # Format output
-        # str_bits_b = ' '.join(str(b) for b in self.input_bits)
-        # str_result = ' '.join([str(result[w]) for w in outputs])
-
-        # protocol_output_str = (
-        #     f"Bob{b_wires} = {str_bits_b}, Outputs{outputs} = {str_result}")
         return list(result.values())

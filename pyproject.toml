@@ -9,7 +9,8 @@ dependencies = [
     "pyzmq",
     "cryptography",
     "sympy",
-    "parameterized"
+    "parameterized",
+    "flake8"
 ]
 requires-python = ">= 3.6"
 description = "Extension to ojroques/garbled-circuit"
