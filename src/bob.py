@@ -51,6 +51,16 @@ class Bob:
         garbled_tables = entry["garbled_tables"]
         b_wires = circuit.get("bob", [])  # list of Bob's wires
 
+        logging.debug(f"Received circuit definition '{circuit['id']}' from Alice")
+        logging.debug(f"Received pbits_out from Alice: {pbits_out}")
+        logging.debug(f"Received {len(garbled_tables)} garbled_tables from Alice")
+
+        if logging.getLogger(__name__).getEffectiveLevel() <= logging.DEBUG:
+            garbled_table_list = list(garbled_tables.items())
+            for garbled_table in garbled_table_list[:3]:
+                logging.debug(f"Garbled table for gate {garbled_table[0]}: {garbled_table[1]}")
+            logging.debug(f"Truncated remaining {len(garbled_table_list) - 3} garbled tables")
+
         logging.info("")
         logging.info(f"======== {circuit['id']} ========")
 

@@ -15,7 +15,7 @@ class ObliviousTransfer:
 
         Args:
             a_inputs: A dict mapping Alice's wires to (key, encr_bit) inputs.
-            b_keys: A dict mapping each Bob's wire to a pair (key, encr_bit).
+            b_keys: A dict mapping each Bob's wire to a pair (key, encr_bits).
 
         Returns:
             The result of the yao circuit evaluation.
@@ -23,6 +23,7 @@ class ObliviousTransfer:
         logging.debug(f"Sending inputs to Bob: {a_inputs}")
         self.socket.send_wait(a_inputs)
 
+        logging.debug("Init OT protocol:")
         logging.debug("Generating prime group to use for OT")
         self.group = self.enabled and (self.group or util.PrimeGroup())
         logging.debug(f"Sending prime group: {self.group}")
@@ -70,7 +71,7 @@ class ObliviousTransfer:
             self.socket.send(w)
 
             if self.enabled:
-                b_inputs_encr[w] = pickle.loads(self.ot_evaluator(b_input))
+                b_inputs_encr[w] = self.ot_evaluator(b_input)
             else:
                 pair = self.socket.receive()
                 logging.debug(f"Received key pair, key {b_input} selected")
@@ -96,7 +97,7 @@ class ObliviousTransfer:
         c = G.gen_pow(G.rand_int())
         logging.debug(f"Sending commitment: {c}")
         h0 = self.socket.send_wait(c)
-        logging.debug(f"Received hash corresponding to Bob's input: {h0}")
+        logging.debug(f"Received h corresponding to Bob's input: {h0}")
         h1 = G.mul(c, G.inv(h0))
         k = G.rand_int()
         c1 = G.gen_pow(k)
@@ -125,13 +126,14 @@ class ObliviousTransfer:
         x = G.rand_int()
         x_pow = G.gen_pow(x)
         h = (x_pow, G.mul(c, G.inv(x_pow)))
-        logging.debug(f"Sending hash depending on input b={b}: {h}")
+        logging.debug(f"Sending h depending on input b={b}: {h}")
         c1, e0, e1 = self.socket.send_wait(h[b])
         logging.debug(f"Received encrypted messages and second commitment: {e0}, {e1}, {c1}")
         e = (e0, e1)
         ot_hash = self.ot_hash(G.pow(c1, x), len(e[b]))
-        mb = util.xor_bytes(e[b], ot_hash)
+        mb = pickle.loads(util.xor_bytes(e[b], ot_hash))
 
+        logging.debug(f"Decrypted (key, encr_bit) pair: {mb}")
         logging.debug("OT protocol ended")
         return mb
 

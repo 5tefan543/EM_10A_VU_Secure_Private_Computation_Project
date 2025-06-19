@@ -75,7 +75,16 @@ class Alice(YaoGarbler):
             "garbled_tables": circuit["garbled_tables"],
             "pbits_out": circuit["pbits_out"],
         }
-        logging.debug(f"Sending {circuit['circuit']['id']}")
+        logging.debug(f"Sending circuit definition '{circuit['circuit']['id']}' to Bob")
+        logging.debug(f"Sending pbits_out to Bob: {circuit['pbits_out']}")
+        if logging.getLogger(__name__).getEffectiveLevel() <= logging.DEBUG:
+            garbled_circuit: yao.GarbledCircuit = circuit['garbled_circuit']
+            garbled_table_list = list(garbled_circuit.garbled_tables.items())
+            logging.debug(f"Sending {len(garbled_table_list)} garbled tables to Bob")
+            for garbled_table in garbled_table_list[:3]:
+                logging.debug(f"Garbled table for gate {garbled_table[0]}: {garbled_table[1]}")
+            logging.debug(f"Truncated remaining {len(garbled_table_list) - 3} garbled tables")
+
         self.socket.send_wait(to_send)
         result = self.evaluate(circuit)
         # close the socket after processing
